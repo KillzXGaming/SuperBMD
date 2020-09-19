@@ -458,9 +458,12 @@ namespace SuperBMDLib.BMD
             writer.Write((int)(writer.BaseStream.Length - start));
             writer.Seek((int)(writer.BaseStream.Length), System.IO.SeekOrigin.Begin);
 
+            //Save our current endianness and write primitives in big endian
             var fileEndianness = writer.CurrentEndian;
             writer.CurrentEndian = Endian.Big;
             packetPrimitiveOffsets = WritePrimitives(writer);
+
+            //Switch back to the previous file endianness
             writer.CurrentEndian = fileEndianness;
 
             // Packet matrix index metadata offset
