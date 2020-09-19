@@ -643,7 +643,7 @@ namespace SuperBMDLib.BMD
         {
             long start = writer.BaseStream.Position;
 
-            writer.Write("VTX1".ToCharArray());
+            writer.WriteSignature("VTX1".ToCharArray());
             writer.Write(0); // Placeholder for section size
             writer.Write(0x40); // Offset to attribute data
 

@@ -274,7 +274,7 @@ namespace SuperBMDLib.BMD
         {
             long start = writer.BaseStream.Position;
 
-            writer.Write("INF1".ToCharArray());
+            writer.WriteSignature("INF1".ToCharArray());
             writer.Write(0); // Placeholder for section size
             writer.Write((short)1);
             writer.Write((short)-1);

@@ -1020,7 +1020,7 @@ namespace SuperBMDLib.BMD
                 }
             }
 
-            writer.Write("MAT3".ToCharArray());
+            writer.WriteSignature("MAT3".ToCharArray());
             writer.Write(0); // Placeholder for section offset
             writer.Write((short)m_RemapIndices.Count);
             writer.Write((short)-1);

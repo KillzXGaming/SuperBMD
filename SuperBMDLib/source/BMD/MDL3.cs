@@ -35,7 +35,7 @@ namespace SuperBMDLib.BMD
         {
             long start = writer.BaseStream.Position;
 
-            writer.Write("MDL3".ToCharArray());
+            writer.WriteSignature("MDL3".ToCharArray());
             writer.Write(0); // Placeholder for section size
             writer.Write((short)Entries.Count);
             writer.Write((short)-1);

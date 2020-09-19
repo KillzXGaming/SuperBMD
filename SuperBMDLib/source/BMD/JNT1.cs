@@ -130,7 +130,7 @@ namespace SuperBMDLib.BMD
         {
             long start = writer.BaseStream.Position;
 
-            writer.Write("JNT1".ToCharArray());
+            writer.WriteSignature("JNT1".ToCharArray());
             writer.Write(0); // Placeholder for section size
             writer.Write((short)FlatSkeleton.Count);
             writer.Write((short)-1);

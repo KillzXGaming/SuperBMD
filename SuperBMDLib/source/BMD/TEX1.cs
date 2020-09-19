@@ -193,7 +193,7 @@ namespace SuperBMDLib.BMD
         {
             long start = writer.BaseStream.Position;
 
-            writer.Write("TEX1".ToCharArray());
+            writer.WriteSignature("TEX1".ToCharArray());
             writer.Write(0); // Placeholder for section size
             writer.Write((short)Textures.Count);
             writer.Write((short)-1);

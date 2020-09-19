@@ -25,6 +25,8 @@ namespace SuperBMDLib
         public BMDInfo ModelStats     { get; private set; }
         static private string[] characters_to_replace = new string[] { " ", "(", ")", ":", "-" };
 
+        private bool littleEndian;
+
         private int packetCount;
         private int vertexCount;
 
@@ -71,10 +73,17 @@ namespace SuperBMDLib
             int j3d2Magic = reader.ReadInt32();
             int modelMagic = reader.ReadInt32();
 
-            if (j3d2Magic != 0x4A334432)
+            if (j3d2Magic != 0x4A334432 && j3d2Magic != 0x3244334A)
                 throw new Exception("Model was not a BMD or BDL! (J3D2 magic not found)");
-            if ((modelMagic != 0x62646C34) && (modelMagic != 0x626D6433))
+            if ((modelMagic != 0x62646C34) && (modelMagic != 0x626D6433 && modelMagic != 0x346C6462))
                 throw new Exception("Model was not a BMD or BDL! (Model type was not bmd3 or bdl4)");
+
+            //Reversed magic found. File uses little endian byte order.
+            if (j3d2Magic == 0x3244334A)
+            {
+                reader.CurrentEndian = Endian.Little;
+                littleEndian = true;
+            }
 
             int modelSize = reader.ReadInt32();
             int sectionCount = reader.ReadInt32();
@@ -274,6 +283,8 @@ namespace SuperBMDLib
                 Console.WriteLine("Compiling the MDL3 ->");
                 MatDisplayList = new MDL3(Materials.m_Materials, Textures.Textures);
             }
+            if (args.littleEndian)
+                littleEndian = true;
 
             Console.WriteLine();
             Console.Write("Generating the Joints");
@@ -301,11 +312,14 @@ namespace SuperBMDLib
             using (FileStream stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
                 EndianBinaryWriter writer = new EndianBinaryWriter(stream, Endian.Big);
+                if (littleEndian)
+                    writer.CurrentEndian = Endian.Little;
 
+                writer.WriteSignature("J3D2".ToCharArray());
                 if (isBDL)
-                    writer.Write("J3D2bdl4".ToCharArray());
+                    writer.WriteSignature("bdl4".ToCharArray());
                 else
-                    writer.Write("J3D2bmd3".ToCharArray());
+                    writer.WriteSignature("bmd3".ToCharArray());
 
                 writer.Write(0); // Placeholder for file size
 

@@ -112,6 +112,11 @@ namespace SuperBMDLib.BMD
 
                 ShapeVertexDescriptor descriptor = new ShapeVertexDescriptor(reader, offset + attributeDataOffset + shapeAttributeOffset);
 
+                //Primitive lists are big endian, even on little endain byte orders
+                //Get the current endianness and revert it back after primitives are read
+                var fileEndianness = reader.CurrentEndian;
+                reader.CurrentEndian = Endian.Big;
+
                 List<Packet> shapePackets = new List<Packet>();
                 for (int j = 0; j < packetCount; j++)
                 {
@@ -126,6 +131,8 @@ namespace SuperBMDLib.BMD
 
                 tempShapeList.Add(new Shape(descriptor, shapeVol, shapePackets, matrixType));
 
+                //Revert the endianness back
+                reader.CurrentEndian = fileEndianness;
                 reader.BaseStream.Seek(curOffset, System.IO.SeekOrigin.Begin);
             }
 
@@ -405,7 +412,7 @@ namespace SuperBMDLib.BMD
 
             long start = writer.BaseStream.Position;
 
-            writer.Write("SHP1".ToCharArray());
+            writer.WriteSignature("SHP1".ToCharArray());
             writer.Write(0); // Placeholder for section offset
             writer.Write((short)Shapes.Count);
             writer.Write((short)-1);
@@ -451,7 +458,10 @@ namespace SuperBMDLib.BMD
             writer.Write((int)(writer.BaseStream.Length - start));
             writer.Seek((int)(writer.BaseStream.Length), System.IO.SeekOrigin.Begin);
 
+            var fileEndianness = writer.CurrentEndian;
+            writer.CurrentEndian = Endian.Big;
             packetPrimitiveOffsets = WritePrimitives(writer);
+            writer.CurrentEndian = fileEndianness;
 
             // Packet matrix index metadata offset
             writer.Seek((int)(start + 36), System.IO.SeekOrigin.Begin);

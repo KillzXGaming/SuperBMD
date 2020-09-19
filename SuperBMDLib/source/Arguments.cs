@@ -24,6 +24,7 @@ namespace SuperBMDLib
         public bool degenerateTriangles;
         public bool readMipmaps;
         public bool dumpHierarchy;
+        public bool littleEndian;
         public string hierarchyPath;
 
         /// <summary>
@@ -48,6 +49,7 @@ namespace SuperBMDLib
             degenerateTriangles = false;
             readMipmaps = true;
             dumpHierarchy = false;
+            littleEndian = false;
             hierarchyPath = "";
 
             int positional_arguments = 0;
@@ -94,6 +96,10 @@ namespace SuperBMDLib
                     case "-b":
                     case "--bdl":
                         output_bdl = true;
+                        break;
+                    case "-l":
+                    case "--little":
+                        littleEndian = true;
                         break;
                     case "--profile":
                         do_profile = true;
